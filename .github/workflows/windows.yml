@@ -1,0 +1,39 @@
+name: Windows app
+
+on:
+  push:
+    paths:
+      - "windows/**"
+      - ".github/workflows/windows.yml"
+  pull_request:
+    paths:
+      - "windows/**"
+      - ".github/workflows/windows.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x
+
+      - name: Test
+        run: dotnet test windows/tests/VoiceNotes.Core.Tests
+
+      - name: Build
+        run: dotnet build windows/src/VoiceNotes.Windows -c Release
+
+      - name: Publish
+        run: dotnet publish windows/src/VoiceNotes.Windows -p:PublishProfile=win-x64
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VoiceNotes-win-x64
+          path: windows/src/VoiceNotes.Windows/bin/publish/win-x64/VoiceNotes.exe
+          if-no-files-found: error

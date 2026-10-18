@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { mkdtemp, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
+import { appDataDir } from '../src/services/app-data-dir.js';
 import { loadConfig } from '../src/services/config.js';
 
 const TOKEN = 'a'.repeat(32);
@@ -47,4 +48,14 @@ test('VOICENOTES_MODELS replaces the built-in model list', () => {
 
 test('rejects an empty VOICENOTES_MODELS list', () => {
   assert.throws(() => loadConfig({ VOICENOTES_MODELS: ' , ' }), /at least one model id/);
+});
+
+test('stores data in the app data folder unless a file is set', () => {
+  const dataDir = appDataDir(process.platform, {}, homedir());
+  const defaults = loadConfig({});
+  assert.equal(defaults.dataFile, join(dataDir, 'server-notes.json'));
+  assert.equal(defaults.settingsFile, join(dataDir, 'server-settings.json'));
+  const custom = loadConfig({ VOICENOTES_DATA_FILE: '/tmp/n.json', VOICENOTES_SETTINGS_FILE: '/tmp/s.json' });
+  assert.equal(custom.dataFile, '/tmp/n.json');
+  assert.equal(custom.settingsFile, '/tmp/s.json');
 });

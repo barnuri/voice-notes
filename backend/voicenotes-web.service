@@ -1,0 +1,12 @@
+[Unit]
+Description=VoiceNotes web server
+
+[Service]
+ExecStart="__NODE__" "__REPO__/web/src/main.js"
+WorkingDirectory=__REPO__/web
+Environment=VOICENOTES_PUBLIC_URL=__PUBLIC_URL__
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -1,13 +1,16 @@
 import { readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEFAULT_MODEL_ID, MODELS } from '../consts/models.js';
 import {
-  DEFAULT_DATA_FILE,
+  DATA_FILE_NAME,
   DEFAULT_HOST,
   DEFAULT_HUB_URL,
-  DEFAULT_SETTINGS_FILE,
   DEFAULT_PORT,
+  SETTINGS_FILE_NAME,
 } from '../consts/server.js';
+import { appDataDir } from './app-data-dir.js';
 
 const MIN_TOKEN_LENGTH = 24;
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', '::1', '[::1]', 'localhost']);
@@ -57,15 +60,16 @@ export function loadConfig(env = process.env) {
   if (!LOOPBACK_HOSTS.has(host) && !token) {
     throw new Error('VOICENOTES_TOKEN is required when VOICENOTES_HOST is not a loopback address');
   }
+  const dataDir = appDataDir(process.platform, env, homedir());
   return {
     port: parsePort(env.VOICENOTES_PORT),
     host,
     hubUrl: (env.VOICENOTES_HUB_URL || DEFAULT_HUB_URL).replace(/\/+$/, ''),
     defaultModel: env.VOICENOTES_MODEL || DEFAULT_MODEL_ID,
     models: parseModels(env.VOICENOTES_MODELS),
-    settingsFile: env.VOICENOTES_SETTINGS_FILE || DEFAULT_SETTINGS_FILE,
+    settingsFile: env.VOICENOTES_SETTINGS_FILE || join(dataDir, SETTINGS_FILE_NAME),
     publicUrl: env.VOICENOTES_PUBLIC_URL || '',
-    dataFile: env.VOICENOTES_DATA_FILE || DEFAULT_DATA_FILE,
+    dataFile: env.VOICENOTES_DATA_FILE || join(dataDir, DATA_FILE_NAME),
     publicDir: fileURLToPath(new URL('../../public/', import.meta.url)),
     token,
   };
