@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.barnuri.voicenotes.web</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/node</string>
+    <string>__REPO__/web/src/main.js</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>VOICENOTES_PUBLIC_URL</key>
+    <string>__PUBLIC_URL__</string>
+  </dict>
+  <key>WorkingDirectory</key>
+  <string>__REPO__/web</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>__HOME__/Library/Logs/voicenotes-web.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/Library/Logs/voicenotes-web.log</string>
+</dict>
+</plist>

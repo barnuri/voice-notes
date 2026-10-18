@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#e5484d">
+  <title>VoiceNotes</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <section id="token-screen" class="token-screen" hidden>
+    <form id="token-form" class="token-card">
+      <img src="/icon.svg" alt="" width="56" height="56">
+      <h1>Connect VoiceNotes</h1>
+      <p>This server requires an access token. Enter it to connect.</p>
+      <label for="token-input">Access token</label>
+      <input id="token-input" type="password" autocomplete="off" spellcheck="false" required>
+      <p id="token-error" class="field-error" role="alert" hidden></p>
+      <button type="submit" class="button primary">Connect</button>
+    </form>
+  </section>
+
+  <div id="app" class="app" data-view="list" hidden>
+    <aside class="sidebar" aria-label="Notes">
+      <header class="sidebar-head">
+        <h1 class="brand"><img src="/icon.svg" alt="" width="22" height="22">VoiceNotes</h1>
+        <button id="new-note" class="icon-button" type="button" title="New note" aria-label="New note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </header>
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="Search notes" aria-label="Search notes" autocomplete="off">
+      </div>
+      <ul id="note-list" class="note-list" role="listbox" aria-label="Notes"></ul>
+      <p id="list-empty" class="list-empty" hidden></p>
+      <div class="model-picker">
+        <label for="model">Whisper model <span>shared with all your devices</span></label>
+        <select id="model"></select>
+        <p id="model-description" class="model-description"></p>
+      </div>
+      <div class="model-picker">
+        <label for="mic">Microphone <span>on this device</span></label>
+        <select id="mic"></select>
+      </div>
+      <footer id="sync-status" class="sync-status" aria-live="polite"></footer>
+    </aside>
+
+    <main class="main">
+      <header class="main-head">
+        <button id="back" class="icon-button back" type="button" aria-label="Back to notes">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+        </button>
+        <p id="note-meta" class="note-meta"></p>
+        <button id="delete-note" class="button quiet" type="button" title="Delete this note">Delete</button>
+        <button id="copy-top" class="button copy" type="button" title="Copy the whole note (Ctrl/⌘ Shift C)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+          <span>Copy text</span>
+        </button>
+      </header>
+
+      <div id="banner" class="banner" role="alert" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v4M12 17.5v.5"/></svg>
+        <p id="banner-text"></p>
+        <a id="banner-link" class="button" hidden>Open securely</a>
+        <button id="banner-retry" class="button" type="button" hidden>Try again</button>
+        <button id="banner-dismiss" class="icon-button" type="button" aria-label="Dismiss">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="editor-wrap">
+        <textarea id="editor" class="editor" dir="auto" spellcheck="true" aria-label="Note text"
+          placeholder="Press record and start talking. Pause any time to see your words here, then edit them freely."></textarea>
+        <div id="editor-empty" class="editor-empty" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          <h2>Start talking</h2>
+          <p>Press the record button. Your words show up here each time you pause.</p>
+        </div>
+      </div>
+
+      <footer class="recorder-bar">
+        <button id="record" class="record-button" type="button" aria-label="Start recording" title="Start recording (Ctrl/⌘ Enter)">
+          <svg class="ring" viewBox="0 0 64 64" aria-hidden="true">
+            <circle class="ring-track" cx="32" cy="32" r="29"/>
+            <circle id="ring-level" class="ring-level" cx="32" cy="32" r="29"/>
+          </svg>
+          <span class="record-core">
+            <svg id="record-icon" viewBox="0 0 24 24" aria-hidden="true"></svg>
+          </span>
+        </button>
+        <canvas id="waveform" class="waveform" aria-hidden="true" hidden></canvas>
+        <div class="status" aria-live="polite">
+          <strong id="status-title">Ready</strong>
+          <span id="status-detail"></span>
+        </div>
+        <label class="language" title="Transcription language">
+          <span class="visually-hidden">Transcription language</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+          <select id="language"></select>
+        </label>
+        <div class="bar-actions">
+          <button id="pause" class="button" type="button" hidden>Pause</button>
+          <button id="done" class="button" type="button" hidden title="Finish this recording (Ctrl/⌘ Shift Enter)">Done</button>
+          <button id="copy" class="button copy primary-copy" type="button" title="Copy the whole note (Ctrl/⌘ Shift C)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+            <span>Copy text</span>
+          </button>
+        </div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

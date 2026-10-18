@@ -1,0 +1,6 @@
+**/agent-spec
+.build/
+build/
+.DS_Store
+.playwright-mcp
+logs/
